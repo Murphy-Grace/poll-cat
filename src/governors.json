@@ -1,0 +1,357 @@
+[
+  {
+    "code": "AK",
+    "state": "Alaska",
+    "source": "https://ballotpedia.org/Alaska_gubernatorial_election,_2026",
+    "candidates": [
+      "David Bronson (R)",
+      "Jonathan Kreiss-Tomkins (D)",
+      "Treg Taylor (R)",
+      "Bernadette Wilson (R)"
+    ]
+  },
+  {
+    "code": "AL",
+    "state": "Alabama",
+    "source": "https://ballotpedia.org/Alabama_gubernatorial_election,_2026",
+    "candidates": [
+      "Doug Jones (D)",
+      "Tommy Tuberville (R)"
+    ]
+  },
+  {
+    "code": "AZ",
+    "state": "Arizona",
+    "source": "https://ballotpedia.org/Arizona_gubernatorial_election,_2026",
+    "candidates": [
+      "Gov. Katie Hobbs (D)",
+      "Andy Biggs (R)"
+    ]
+  },
+  {
+    "code": "AR",
+    "state": "Arkansas",
+    "source": "https://ballotpedia.org/Arkansas_gubernatorial_election,_2026",
+    "candidates": [
+      "Gov. Sarah Huckabee Sanders (R)",
+      "Fredrick Love (D)"
+    ]
+  },
+  {
+    "code": "CA",
+    "state": "California",
+    "source": "https://ballotpedia.org/California_gubernatorial_election,_2026",
+    "candidates": [
+      "Xavier Becerra (D)",
+      "Steve Hilton (R)"
+    ]
+  },
+  {
+    "code": "CO",
+    "state": "Colorado",
+    "source": "https://ballotpedia.org/Colorado_gubernatorial_and_lieutenant_gubernatorial_election,_2026",
+    "candidates": [
+      "Victor Marx (R)",
+      "Phil Weiser (D)"
+    ]
+  },
+  {
+    "code": "FL",
+    "state": "Florida",
+    "source": "https://ballotpedia.org/Florida_gubernatorial_and_lieutenant_gubernatorial_election,_2026",
+    "candidates": [
+      "Byron Donalds (R)",
+      "David Jolly (D)"
+    ]
+  },
+  {
+    "code": "GA",
+    "state": "Georgia",
+    "source": "https://ballotpedia.org/Georgia_gubernatorial_election,_2026",
+    "candidates": [
+      "Keisha Lance Bottoms (D)",
+      "Rick Jackson (R)"
+    ]
+  },
+  {
+    "code": "GU",
+    "state": "Guam",
+    "source": "https://ballotpedia.org/Guam_gubernatorial_and_lieutenant_gubernatorial_election,_2026",
+    "candidates": [
+      "Vicente Ada (R)",
+      "Therese Terlaje (D)"
+    ]
+  },
+  {
+    "code": "HI",
+    "state": "Hawaii",
+    "source": "https://ballotpedia.org/Hawaii_gubernatorial_and_lieutenant_gubernatorial_election,_2026",
+    "candidates": [
+      "Gov. Josh Green (D)",
+      "Gary Cordery (R)"
+    ]
+  },
+  {
+    "code": "ID",
+    "state": "Idaho",
+    "source": "https://ballotpedia.org/Idaho_gubernatorial_election,_2026",
+    "candidates": [
+      "Gov. Brad Little (R)",
+      "Terri Pickens (D)"
+    ]
+  },
+  {
+    "code": "IL",
+    "state": "Illinois",
+    "source": "https://ballotpedia.org/Illinois_gubernatorial_and_lieutenant_gubernatorial_election,_2026",
+    "candidates": [
+      "Gov. JB Pritzker (D)",
+      "Darren Bailey (R)"
+    ]
+  },
+  {
+    "code": "IA",
+    "state": "Iowa",
+    "source": "https://ballotpedia.org/Iowa_gubernatorial_and_lieutenant_gubernatorial_election,_2026",
+    "candidates": [
+      "Zach Lahn (R)",
+      "Rob Sand (D)"
+    ]
+  },
+  {
+    "code": "KS",
+    "state": "Kansas",
+    "source": "https://ballotpedia.org/Kansas_gubernatorial_and_lieutenant_gubernatorial_election,_2026",
+    "candidates": [
+      "Cindy Holscher (D)",
+      "Ty Masterson (R)"
+    ]
+  },
+  {
+    "code": "ME",
+    "state": "Maine",
+    "source": "https://ballotpedia.org/Maine_gubernatorial_election,_2026",
+    "candidates": [
+      "Hannah Pingree (D)",
+      "Bobby Charles (R)",
+      "Rick Bennett (I)"
+    ]
+  },
+  {
+    "code": "MD",
+    "state": "Maryland",
+    "source": "https://ballotpedia.org/Maryland_gubernatorial_and_lieutenant_gubernatorial_election,_2026",
+    "candidates": [
+      "Gov. Wes Moore (D)",
+      "Dan Cox (R)"
+    ]
+  },
+  {
+    "code": "MA",
+    "state": "Massachusetts",
+    "source": "https://ballotpedia.org/Massachusetts_gubernatorial_and_lieutenant_gubernatorial_election,_2026",
+    "candidates": [
+      "Gov. Maura Healey (D)",
+      "Michael Minogue (R)"
+    ]
+  },
+  {
+    "code": "MI",
+    "state": "Michigan",
+    "source": "https://ballotpedia.org/Michigan_gubernatorial_and_lieutenant_gubernatorial_election,_2026",
+    "candidates": [
+      "Jocelyn Benson (D)",
+      "John James (R)"
+    ]
+  },
+  {
+    "code": "MN",
+    "state": "Minnesota",
+    "source": "https://ballotpedia.org/Minnesota_gubernatorial_and_lieutenant_gubernatorial_election,_2026",
+    "candidates": [
+      "Lisa Demuth (R)",
+      "Amy Klobuchar (D)"
+    ]
+  },
+  {
+    "code": "MP",
+    "state": "Northern Mariana Islands",
+    "source": "https://ballotpedia.org/Northern_Mariana_Islands_gubernatorial_and_lieutenant_gubernatorial_election,_2026",
+    "candidates": [
+      "Ralph Torres (R)",
+      "Blas T. Attao (Independent)",
+      "Lawrence Camacho (Independent)"
+    ]
+  },
+  {
+    "code": "NE",
+    "state": "Nebraska",
+    "source": "https://ballotpedia.org/Nebraska_gubernatorial_and_lieutenant_gubernatorial_election,_2026",
+    "candidates": [
+      "Gov. Jim Pillen (R)",
+      "Lynne Walz (D)"
+    ]
+  },
+  {
+    "code": "CT",
+    "state": "Connecticut",
+    "source": "https://ballotpedia.org/Connecticut_gubernatorial_and_lieutenant_gubernatorial_election,_2026",
+    "candidates": [
+      "Gov. Ned Lamont (D)",
+      "Ryan Fazio (R)"
+    ]
+  },
+  {
+    "code": "NV",
+    "state": "Nevada",
+    "source": "https://ballotpedia.org/Nevada_gubernatorial_election,_2026",
+    "candidates": [
+      "Gov. Joe Lombardo (R)",
+      "Aaron Ford (D)"
+    ]
+  },
+  {
+    "code": "NH",
+    "state": "New Hampshire",
+    "source": "https://ballotpedia.org/New_Hampshire_gubernatorial_election,_2026",
+    "candidates": [
+      "Gov. Kelly Ayotte (R)",
+      "Cinde Warmington (D)"
+    ]
+  },
+  {
+    "code": "NM",
+    "state": "New Mexico",
+    "source": "https://ballotpedia.org/New_Mexico_gubernatorial_and_lieutenant_gubernatorial_election,_2026",
+    "candidates": [
+      "Deb Haaland (D)",
+      "Greggory Hull (R)"
+    ]
+  },
+  {
+    "code": "NY",
+    "state": "New York",
+    "source": "https://ballotpedia.org/New_York_gubernatorial_and_lieutenant_gubernatorial_election,_2026",
+    "candidates": [
+      "Gov. Kathy Hochul (D)",
+      "Bruce Blakeman (R)"
+    ]
+  },
+  {
+    "code": "OH",
+    "state": "Ohio",
+    "source": "https://ballotpedia.org/Ohio_gubernatorial_and_lieutenant_gubernatorial_election,_2026",
+    "candidates": [
+      "Amy Acton (D)",
+      "Vivek Ramaswamy (R)"
+    ]
+  },
+  {
+    "code": "OK",
+    "state": "Oklahoma",
+    "source": "https://ballotpedia.org/Oklahoma_gubernatorial_election,_2026",
+    "candidates": [
+      "Cydni Munson (D)",
+      "August 25 Primary Runoff Winner (R)"
+    ]
+  },
+  {
+    "code": "OR",
+    "state": "Oregon",
+    "source": "https://ballotpedia.org/Oregon_gubernatorial_election,_2026",
+    "candidates": [
+      "Gov. Tina Kotek (D)",
+      "Christine Drazan (R)"
+    ]
+  },
+  {
+    "code": "PA",
+    "state": "Pennsylvania",
+    "source": "https://ballotpedia.org/Pennsylvania_gubernatorial_and_lieutenant_gubernatorial_election,_2026",
+    "candidates": [
+      "Gov. Josh Shapiro (D)",
+      "Stacy Garrity (R)"
+    ]
+  },
+  {
+    "code": "RI",
+    "state": "Rhode Island",
+    "source": "https://ballotpedia.org/Rhode_Island_gubernatorial_election,_2026",
+    "candidates": [
+      "Helena Foulkes (D)",
+      "Aaron Guckian (R)"
+    ]
+  },
+  {
+    "code": "SC",
+    "state": "South Carolina",
+    "source": "https://ballotpedia.org/South_Carolina_gubernatorial_and_lieutenant_gubernatorial_election,_2026",
+    "candidates": []
+  },
+  {
+    "code": "SD",
+    "state": "South Dakota",
+    "source": "https://ballotpedia.org/South_Dakota_gubernatorial_and_lieutenant_gubernatorial_election,_2026",
+    "candidates": [
+      "Gov. Larry Rhoden (R)",
+      "Dan Ahlers (D)"
+    ]
+  },
+  {
+    "code": "TN",
+    "state": "Tennessee",
+    "source": "https://ballotpedia.org/Tennessee_gubernatorial_election,_2026",
+    "candidates": [
+      "Marsha Blackburn (R)",
+      "Jerri Green (D)"
+    ]
+  },
+  {
+    "code": "TX",
+    "state": "Texas",
+    "source": "https://ballotpedia.org/Texas_gubernatorial_election,_2026",
+    "candidates": [
+      "Gov. Greg Abbott (R)",
+      "Gina Hinojosa (D)"
+    ]
+  },
+  {
+    "code": "VT",
+    "state": "Vermont",
+    "source": "https://ballotpedia.org/Vermont_gubernatorial_election,_2026",
+    "candidates": [
+      "Gov. Phil Scott (R)",
+      "Amanda Janoo (D)"
+    ]
+  },
+  {
+    "code": "VI",
+    "state": "Virgin Islands",
+    "source": "https://ballotpedia.org/U.S._Virgin_Islands_gubernatorial_and_lieutenant_gubernatorial_election,_2026",
+    "candidates": [
+      "Stacey Plaskett (D)",
+      "Independents:\n\nOakland Benta",
+      "Adlah Donastorg Jr.",
+      "Gustav James",
+      "Warren Mosler"
+    ]
+  },
+  {
+    "code": "WI",
+    "state": "Wisconsin",
+    "source": "https://ballotpedia.org/Wisconsin_gubernatorial_and_lieutenant_gubernatorial_election,_2026",
+    "candidates": [
+      "David Crowley (D)",
+      "Tom Tiffany (R)"
+    ]
+  },
+  {
+    "code": "WY",
+    "state": "Wyoming",
+    "source": "https://ballotpedia.org/Wyoming_gubernatorial_election,_2026",
+    "candidates": [
+      "Eric Barlow (R)",
+      "Ken Casner (D)"
+    ]
+  }
+]

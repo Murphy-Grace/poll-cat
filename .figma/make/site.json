@@ -1,0 +1,14 @@
+{
+  "description": "Track selected 2026 U.S. Senate races, organize them into personal tiers, and review attributed polling, forecasts, results, and media-source context.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  },
+  "title": "[NEW NAME]",
+  "icons": {
+    "icon": "/POLLCAT.png"
+  }
+}
