@@ -1,4 +1,5 @@
-import { CandidatePortrait, ResultsCard, MapPreview, MapViewTabs, ProviderNotice } from './ElectionMapUI'
+import { ElectionMapPopup, useMapPopup } from './ElectionMapPopup'
+import { CandidatePortrait, MapViewTabs, ProviderNotice } from './ElectionMapUI'
 import { LiveElectionStatus } from './LiveElectionStatus'
 import { RefreshStatus } from './RefreshStatus'
 import { SeatComposition } from "./SeatComposition"
@@ -801,14 +802,6 @@ function CandidateProfiles({ code, result, updatedAt, polling }: { code: string;
   </div>
 }
 
-function SenateTooltip({ code, summary }: { code: string; summary: string }) {
-  const entry = SENATE_DIRECTORY[code]
-  return <MapPreview id="senate-state-tooltip">
-    <strong>{stateNameForCode(code)} · U.S. Senate</strong>
-    {entry ? <><ul>{entry.candidates.filter(c => !c.writeIn).slice(0, 2).map((candidate) => <li key={candidate.name}><CandidatePortrait candidate={candidate} />{candidate.name} · {candidate.party}{candidate.writeIn ? " · Write-in" : ""}</li>)}</ul><p>{summary}</p><small>Directory checked {entry.checkedOn} · Click or press Enter for profiles</small></> : <p>{NO_SENATE_ELECTION}</p>}
-  </MapPreview>
-}
-
 function SenateMap({
   savedIds = [],
   pollingProvider = EMPTY_PROVIDER,
@@ -835,8 +828,9 @@ function SenateMap({
   onOpenRace: (race: Race) => void
 }) {
   const pollingReady = pollingProvider.data
-  const [tooltipAnchor, setTooltipAnchor] = useState({ x: 0, y: 0 })
-  const [hoveredCode, setHoveredCode] = useState<string | null>(null)
+  const popup = useMapPopup()
+  const hoveredCode = popup.code
+  const setHoveredCode = (_: null) => popup.close()
   const [localSelected, setLocalSelected] = useState<string | null>(null)
   const selectedCode = selectedState === undefined ? localSelected : selectedState
   const setSelectedCode = (code: string | null) => { setLocalSelected(code); onSelectState?.(code) }
@@ -930,15 +924,6 @@ function SenateMap({
                       : `polling average ${pollingRace.margin_label ?? "has no margin"}`
                     }${race ? "; dashboard race configured" : ""}`
                     : `${location.name}: no validated Senate polling`
-                const openState = () => {
-                  setSelectedCode(code)
-                  setHoveredCode(null)
-                  requestAnimationFrame(() => explorerRef.current?.focus())
-                }
-                const showTooltip = (x: number, y: number) => {
-                  setTooltipAnchor({ x, y })
-                  setHoveredCode(code)
-                }
                 const ballotDescription = SENATE_DIRECTORY[code]?.candidates.map((c) => `${c.name} (${c.party})`).join("; ") ?? NO_SENATE_ELECTION
                 return (
                   <path
@@ -950,27 +935,17 @@ function SenateMap({
                     clipPath={mapView === "closings" ? `url(#senate-closing-clip-${location.id})` : undefined}
                     d={location.path}
                     key={location.id}
-                    onClick={(event) => { if (resultMode) { showTooltip(event.clientX || event.currentTarget.getBoundingClientRect().left, event.clientY || event.currentTarget.getBoundingClientRect().top) } else openState() }}
-                    onPointerEnter={(event) => { if (event.pointerType !== "touch") showTooltip(event.clientX, event.clientY) }}
-                    onPointerMove={(event) => { if (event.pointerType !== "touch") showTooltip(event.clientX, event.clientY) }}
-                    onPointerLeave={() => { if (!resultMode) setHoveredCode(null) }}
-                    onFocus={(event) => {
-                      const rect = event.currentTarget.getBoundingClientRect()
-                      showTooltip(rect.left + rect.width / 2, rect.top + rect.height / 2)
-                    }}
-                    onBlur={(event) => { if (!(event.relatedTarget as Element | null)?.closest(".results-hover-card")) setHoveredCode(null) }}
-                    onKeyDown={(event) => {
-                      if (event.key === "Escape") setHoveredCode(null)
-                      if (event.key === "Enter" || event.key === " ") {
-                        event.preventDefault()
-                        if (resultMode) { const rect = event.currentTarget.getBoundingClientRect(); showTooltip(rect.left + rect.width / 2, rect.top + rect.height / 2) } else openState()
-                      }
-                    }}
+                    onClick={event => { setSelectedCode(code); popup.show(code, event.currentTarget, true) }}
+                    onPointerEnter={event => { if (event.pointerType !== 'touch') popup.show(code, event.currentTarget) }}
+                    onPointerLeave={popup.leave}
+                    onFocus={event => popup.show(code, event.currentTarget)}
+                    onBlur={popup.leave}
+                    onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setSelectedCode(code); popup.show(code, event.currentTarget, true) } }}
                     role="button"
                     aria-pressed={selectedCode === code}
                     tabIndex={0}
                   >
-                    <title>{description} · {marginLabel(mapMargin)}</title>
+
                   </path>
                 )
               })}
@@ -989,8 +964,7 @@ function SenateMap({
           </>}
         </aside>
       </div>
-      {hoveredCode && resultMode && <ResultsCard id="senate-state-tooltip" state={stateNameForCode(hoveredCode)} office="Senate" anchor={tooltipAnchor} updatedAt={resultsFeed?.as_of} onClose={() => setHoveredCode(null)} races={RACES.filter(r => r.code === hoveredCode).map(r => ({ label: r.seat === 'SP' ? 'Special election' : 'Regular election', result: resultsFeed?.races[`${r.code}-${r.seat}`], candidates: SENATE_DIRECTORY[hoveredCode]?.candidates ?? [] }))} />}
-      {hoveredCode && !resultMode && <SenateTooltip code={hoveredCode} summary={(() => { const race = RACES.find(r => r.code === hoveredCode); const poll = race && pollingReady ? matchPollingRace(pollingReady, hoveredCode, race.seat === "SP") : undefined; const result = race ? resultsFeed?.races[`${hoveredCode}-${race.seat}`] : undefined; return `${mapView === "closings" ? "Scheduled closing times" : resultMode ? `Votes: ${marginLabel(voteMargin(result))} · ${reportedVoteSummary(result)} · Open America · ${formatProviderTime(resultsFeed?.as_of ?? null)}` : `Polling: ${marginLabel(margin(poll?.dem_average, poll?.rep_average))} · PollingSource · ${poll?.last_poll_date ?? "Publication date unavailable"}`} · ${closingStatus(stateNameForCode(hoveredCode), now)}${mapView === "closings" && closingSecondary(stateNameForCode(hoveredCode), now) ? " · Closing next" : ""}` })()} />}
+      {hoveredCode && <ElectionMapPopup id="senate-state-tooltip" state={stateNameForCode(hoveredCode)} office="U.S. Senate" view={mapView} popup={popup} now={now} updatedAt={resultsSuccess} stale={mapView === 'results' ? !!resultsError || resultsFeed?.stale : !!pollingProvider.error} onDetails={() => { setSelectedCode(hoveredCode); popup.close(); requestAnimationFrame(() => explorerRef.current?.focus()) }} races={RACES.filter(r => r.code === hoveredCode).map(r => ({ label: r.seat === 'SP' ? 'Special election' : 'Regular election', result: resultsFeed?.races[`${r.code}-${r.seat}`], poll: pollingReady ? matchPollingRace(pollingReady, hoveredCode, r.seat === 'SP') : undefined, candidates: SENATE_DIRECTORY[hoveredCode]?.candidates ?? [] }))} />}
       <div className="senate-state-explorer" aria-live="polite" ref={explorerRef} tabIndex={-1} role="region" aria-label={directoryName ? `${directoryName} Senate candidate profiles` : "Senate candidate profiles"}>
         <div className="senate-state-explorer-heading">
           <div>

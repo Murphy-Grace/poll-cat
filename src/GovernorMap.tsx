@@ -1,4 +1,5 @@
-import { CandidatePortrait, ResultsCard, MapPreview, MapViewTabs, ProviderNotice } from './ElectionMapUI'
+import { ElectionMapPopup, useMapPopup } from './ElectionMapPopup'
+import { CandidatePortrait, MapViewTabs, ProviderNotice } from './ElectionMapUI'
 import { LiveElectionStatus } from './LiveElectionStatus'
 import { GOVERNOR_PORTRAITS } from './governor-portraits'
 import { RefreshStatus } from './RefreshStatus'
@@ -36,8 +37,9 @@ export function GovernorMap({ mode, news }: { mode: "polling" | "election"; news
   useEffect(() => setView(mode === 'election' ? 'results' : 'polling'), [mode])
   const [refreshKey, setRefreshKey] = useState(0)
   const [sort, setSort] = useState('alpha')
-  const [hovered, setHovered] = useState<string | null>(null)
-  const [anchor, setAnchor] = useState({ x: 0, y: 0 })
+  const popup = useMapPopup()
+  const hovered = popup.code
+  const setHovered = (_: null) => popup.close()
   const now = useElectionClock()
   const locations = (usaMap.locations as GovernorLocation[]).filter(l => l.id !== 'dc')
   const normalizedName = (name: string) => name.replace(/^Gov\. /, '').replace(/ \([^)]+\)$/, '').toLowerCase()
@@ -153,44 +155,23 @@ export function GovernorMap({ mode, news }: { mode: "polling" | "election"; news
                     race ? "configured" : "no-election"
                   } ${selected === code ? "selected" : ""}`}
                   style={{ fill: race ? marginColor(value(code)) : "#454951", ...closingStyle(l.name, now, view, "governor-closing") }}
-                  onPointerEnter={e => { if (e.pointerType !== "touch") { setAnchor({ x: e.clientX, y: e.clientY }); setHovered(code) } }} onPointerLeave={() => { if (view !== "results") setHovered(null) }}
-                  onFocus={e => { const rect = e.currentTarget.getBoundingClientRect(); setAnchor({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }); setHovered(code) }} onBlur={e => { if (!(e.relatedTarget as Element | null)?.closest(".results-hover-card")) setHovered(null) }}
+                  onPointerEnter={e => { if (e.pointerType !== 'touch') popup.show(code, e.currentTarget) }} onPointerLeave={popup.leave}
+                  onFocus={e => popup.show(code, e.currentTarget)} onBlur={popup.leave}
                   tabIndex={0}
                   aria-pressed={selected === code}
                   role="button"
                   aria-describedby={hovered === code ? "governor-map-tooltip" : undefined}
                   aria-label={view === "closings" ? `${l.name}: ${closingStatus(l.name, now)}` : label}
-                  onClick={e => { if (view === "results") { const rect = e.currentTarget.getBoundingClientRect(); setAnchor({ x: e.clientX || rect.left, y: e.clientY || rect.top }); setHovered(code) } else openState(code) }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Escape") setHovered(null)
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault()
-                      if (view === "results") setHovered(code); else openState(code)
-                    }
-                  }}
+                  onClick={e => { setSelected(code); popup.show(code, e.currentTarget, true) }}
+                  onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelected(code); popup.show(code, e.currentTarget, true) } }}
                 >
-                  <title>
-                    {label}
-                    {race ? ` · ${race.candidates.join("; ")}` : ""}
-                  </title>
                 </path>
               )
             })}
         </svg></div>
         {view === "results" && <LiveElectionStatus office="Governor" success={resultSuccess} next={resultNext} error={resultError} feed={results} states={directory.filter(r => !["GU", "MP", "VI"].includes(r.code)).map(r => r.code)} />}
         <aside className="map-legend">{view === 'closings' ? <ClosingLegend now={now} /> : <MarginLegend />}</aside></div>
-        {hovered && view === 'results' && <ResultsCard id="governor-map-tooltip" state={locations.find(l => l.id.toUpperCase() === hovered)?.name ?? hovered} office="Governor" anchor={anchor} updatedAt={results?.as_of} onClose={() => setHovered(null)} races={directory.filter(r => r.code === hovered).map(r => ({ label: 'Governor election', result: results?.races[`${hovered}-REG`], candidates: r.candidates.map(name => ({ name: name.replace(/^Gov\. /, '').replace(/ \([^)]+\)$/, ''), party: name.match(/\(([^)]+)\)$/)?.[1], photo: governorPhoto(normalizedName(name)) })) }))} />}
-        {hovered && view !== 'results' && <MapPreview id="governor-map-tooltip">
-          <strong>{locations.find(l => l.id.toUpperCase() === hovered)?.name} · Governor</strong>
-          {directory.find(r => r.code === hovered)?.candidates.slice(0,2).map(name => {
-            const photo = governorPhoto(normalizedName(name))
-            return <span className="tooltip-candidate" key={name}><CandidatePortrait candidate={{ name: name.replace(/^Gov\. /, ""), photo }} />{name}</span>
-          })}
-          <p>{view === 'closings' ? 'Scheduled poll closings' : `${'Polling lead'}: ${directory.some(r => r.code === hovered) ? marginLabel(value(hovered)) : 'No governor election in 2026'}`}</p>
-          <small>{view === 'closings' ? '270toWin · 2026 schedule · checked Nov. 3' : `PollingSource · ${polls.find(p => p.state === hovered)?.last_poll_date ?? 'Source time unavailable'}`}</small>
-          <p>{closingStatus(locations.find(l => l.id.toUpperCase() === hovered)?.name ?? '', now)}</p>
-          {view === 'closings' && closingSecondary(locations.find(l => l.id.toUpperCase() === hovered)?.name ?? '', now) && <small>Closing next</small>}
-        </MapPreview>}
+        {hovered && <ElectionMapPopup id="governor-map-tooltip" state={locations.find(l => l.id.toUpperCase() === hovered)?.name ?? hovered} office="Governor" view={view} popup={popup} now={now} updatedAt={resultSuccess} stale={view === 'results' ? !!resultError || results?.stale : !!pollError} onDetails={() => openState(hovered)} races={directory.filter(r => r.code === hovered).map(r => ({ label: 'Governor election', result: results?.races[`${hovered}-REG`], poll: polls.find(p => p.state === hovered), candidates: r.candidates.map(name => ({ name: name.replace(/^Gov\. /, '').replace(/ \([^)]+\)$/, ''), party: name.match(/\(([^)]+)\)$/)?.[1], photo: governorPhoto(normalizedName(name)) })) }))} />}
         <p>
           Territories:{" "}
           {directory
