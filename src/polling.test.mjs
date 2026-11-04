@@ -29,3 +29,16 @@ test('requests exact documented office URLs, validates envelopes and reports fai
  await assert.rejects(fetchForecastRaces('governors'),/cooldown/)
  } finally {globalThis.fetch=original}
 })
+
+test('polling outage stays an error and a later valid response preserves office separation', async () => {
+ const { fetchPollingRaces } = await import('./polling.ts')
+ const original = globalThis.fetch
+ try {
+  globalThis.fetch = async () => Response.json({error:'race list temporarily unavailable; retry shortly'}, {status:503})
+  await assert.rejects(fetchPollingRaces('governor'), /HTTP 503/)
+  const race = {state:'AL',race_type:'governor',is_special:false,page:'https://pollingsource.com/race',detail:'https://pollingsource.com/api/v1/race?state=AL',dem_average:null,rep_average:null}
+  globalThis.fetch = async () => Response.json({dataset:'PollingSource race polling averages',races:[race,{...race,race_type:'senate'}]})
+  assert.deepEqual(await fetchPollingRaces('governor'), [race])
+  assert.deepEqual(await fetchPollingRaces('senate'), [{...race,race_type:'senate'}])
+ } finally { globalThis.fetch = original }
+})

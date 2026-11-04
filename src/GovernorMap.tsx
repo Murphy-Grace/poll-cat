@@ -1,4 +1,4 @@
-import { CandidatePortrait, MapPreview, MapViewTabs, ProviderNotice } from './ElectionMapUI'
+import { CandidatePortrait, ResultsCard, MapPreview, MapViewTabs, ProviderNotice } from './ElectionMapUI'
 import { LiveElectionStatus } from './LiveElectionStatus'
 import { GOVERNOR_PORTRAITS } from './governor-portraits'
 import { RefreshStatus } from './RefreshStatus'
@@ -34,8 +34,10 @@ export function MarginLegend() {
 export function GovernorMap({ mode, news }: { mode: "polling" | "election"; news: ReturnType<typeof useGuardianNews> }) {
   const [view, setView] = useState<'polling' | 'results' | 'closings'>(mode === 'election' ? 'results' : 'polling')
   useEffect(() => setView(mode === 'election' ? 'results' : 'polling'), [mode])
+  const [refreshKey, setRefreshKey] = useState(0)
   const [sort, setSort] = useState('alpha')
   const [hovered, setHovered] = useState<string | null>(null)
+  const [anchor, setAnchor] = useState({ x: 0, y: 0 })
   const now = useElectionClock()
   const locations = (usaMap.locations as GovernorLocation[]).filter(l => l.id !== 'dc')
   const normalizedName = (name: string) => name.replace(/^Gov\. /, '').replace(/ \([^)]+\)$/, '').toLowerCase()
@@ -90,7 +92,7 @@ export function GovernorMap({ mode, news }: { mode: "polling" | "election"; news
     const timer = window.setInterval(refreshDue, 1000)
     document.addEventListener('visibilitychange', refreshDue)
     return () => { active = false; clearInterval(timer); document.removeEventListener('visibilitychange', refreshDue) }
-  }, [])
+  }, [refreshKey])
   const value = (code: string) =>
     view === "results"
       ? voteMargin(results?.races[`${code}-REG`])
@@ -117,7 +119,8 @@ export function GovernorMap({ mode, news }: { mode: "polling" | "election"; news
         </div>
       </div>
       <div className="national-explorer-layout"><div><section className="map-card">
-        <h2>2026 Governors</h2><p className="map-intro">Track statewide races, live results, and poll closings.</p><RefreshStatus label="Governor polling" success={pollSuccess} next={pollNext} interval={900000} failed={Boolean(pollError)} /><RefreshStatus label="Governor results" success={resultSuccess} next={resultNext} interval={60000} failed={results?.stale || Boolean(resultError)} />
+<div className="map-card-heading"><div><p className="eyebrow">National Governor explorer · all 50 states</p><h2>2026 Governors</h2><p>Track polling, live results, and poll closings.</p></div></div><RefreshStatus label="Governor polling" success={pollSuccess} next={pollNext} interval={900000} failed={Boolean(pollError)} /><RefreshStatus label="Governor results" success={resultSuccess} next={resultNext} interval={60000} failed={results?.stale || Boolean(resultError)} />
+        <button type="button" className="button secondary map-refresh" onClick={() => setRefreshKey(key => key + 1)}>Refresh polling</button>
         <MapViewTabs office="Governor" view={view} onChange={setView} />
         <ProviderNotice label="Governor polling" error={pollError} /><ProviderNotice label="Governor results" error={resultError} />
         <PollClosings compact />
@@ -150,18 +153,19 @@ export function GovernorMap({ mode, news }: { mode: "polling" | "election"; news
                     race ? "configured" : "no-election"
                   } ${selected === code ? "selected" : ""}`}
                   style={{ fill: race ? marginColor(value(code)) : "#454951", ...closingStyle(l.name, now, view, "governor-closing") }}
-                  onPointerEnter={e => { if (e.pointerType !== "touch") setHovered(code) }} onPointerLeave={() => setHovered(null)}
-                  onFocus={() => setHovered(code)} onBlur={() => setHovered(null)}
+                  onPointerEnter={e => { if (e.pointerType !== "touch") { setAnchor({ x: e.clientX, y: e.clientY }); setHovered(code) } }} onPointerLeave={() => { if (view !== "results") setHovered(null) }}
+                  onFocus={e => { const rect = e.currentTarget.getBoundingClientRect(); setAnchor({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }); setHovered(code) }} onBlur={e => { if (!(e.relatedTarget as Element | null)?.closest(".results-hover-card")) setHovered(null) }}
                   tabIndex={0}
+                  aria-pressed={selected === code}
                   role="button"
                   aria-describedby={hovered === code ? "governor-map-tooltip" : undefined}
                   aria-label={view === "closings" ? `${l.name}: ${closingStatus(l.name, now)}` : label}
-                  onClick={() => openState(code)}
+                  onClick={e => { if (view === "results") { const rect = e.currentTarget.getBoundingClientRect(); setAnchor({ x: e.clientX || rect.left, y: e.clientY || rect.top }); setHovered(code) } else openState(code) }}
                   onKeyDown={(e) => {
                     if (e.key === "Escape") setHovered(null)
                     if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault()
-                      openState(code)
+                      if (view === "results") setHovered(code); else openState(code)
                     }
                   }}
                 >
@@ -175,15 +179,15 @@ export function GovernorMap({ mode, news }: { mode: "polling" | "election"; news
         </svg></div>
         {view === "results" && <LiveElectionStatus office="Governor" success={resultSuccess} next={resultNext} error={resultError} feed={results} states={directory.filter(r => !["GU", "MP", "VI"].includes(r.code)).map(r => r.code)} />}
         <aside className="map-legend">{view === 'closings' ? <ClosingLegend now={now} /> : <MarginLegend />}</aside></div>
-        {hovered && <MapPreview id="governor-map-tooltip">
+        {hovered && view === 'results' && <ResultsCard id="governor-map-tooltip" state={locations.find(l => l.id.toUpperCase() === hovered)?.name ?? hovered} office="Governor" anchor={anchor} updatedAt={results?.as_of} onClose={() => setHovered(null)} races={directory.filter(r => r.code === hovered).map(r => ({ label: 'Governor election', result: results?.races[`${hovered}-REG`], candidates: r.candidates.map(name => ({ name: name.replace(/^Gov\. /, '').replace(/ \([^)]+\)$/, ''), party: name.match(/\(([^)]+)\)$/)?.[1], photo: governorPhoto(normalizedName(name)) })) }))} />}
+        {hovered && view !== 'results' && <MapPreview id="governor-map-tooltip">
           <strong>{locations.find(l => l.id.toUpperCase() === hovered)?.name} · Governor</strong>
           {directory.find(r => r.code === hovered)?.candidates.slice(0,2).map(name => {
             const photo = governorPhoto(normalizedName(name))
             return <span className="tooltip-candidate" key={name}><CandidatePortrait candidate={{ name: name.replace(/^Gov\. /, ""), photo }} />{name}</span>
           })}
-          <p>{view === 'closings' ? 'Scheduled poll closings' : `${view === 'results' ? 'Reported vote lead' : 'Polling lead'}: ${directory.some(r => r.code === hovered) ? marginLabel(value(hovered)) : 'No governor election in 2026'}`}</p>
-          {view === "results" && <p>{reportedVoteSummary(results?.races[`${hovered}-REG`])}</p>}
-          <small>{view === 'closings' ? '270toWin · 2026 schedule · checked Nov. 3' : view === 'results' ? `Open America · ${results?.as_of ?? 'Source time unavailable'}` : `PollingSource · ${polls.find(p => p.state === hovered)?.last_poll_date ?? 'Source time unavailable'}`}</small>
+          <p>{view === 'closings' ? 'Scheduled poll closings' : `${'Polling lead'}: ${directory.some(r => r.code === hovered) ? marginLabel(value(hovered)) : 'No governor election in 2026'}`}</p>
+          <small>{view === 'closings' ? '270toWin · 2026 schedule · checked Nov. 3' : `PollingSource · ${polls.find(p => p.state === hovered)?.last_poll_date ?? 'Source time unavailable'}`}</small>
           <p>{closingStatus(locations.find(l => l.id.toUpperCase() === hovered)?.name ?? '', now)}</p>
           {view === 'closings' && closingSecondary(locations.find(l => l.id.toUpperCase() === hovered)?.name ?? '', now) && <small>Closing next</small>}
         </MapPreview>}
@@ -195,7 +199,7 @@ export function GovernorMap({ mode, news }: { mode: "polling" | "election"; news
               <button
                 className="button secondary"
                 key={r.code}
-                onClick={() => setSelected(r.code)}
+                onClick={() => openState(r.code)}
               >
                 {r.state}
               </button>
@@ -233,9 +237,9 @@ export function GovernorMap({ mode, news }: { mode: "polling" | "election"; news
                       target="_blank"
                       rel="noreferrer"
                     >
-                      NGA general-election directory
+                      NGA election schedule
                     </a>{" "}
-                    · checked November 3, 2026 ·{" "}
+                    · Directory snapshot ·{" "}
                     <a href={entry.source} target="_blank" rel="noreferrer">
                       Race details
                     </a>
@@ -248,8 +252,9 @@ export function GovernorMap({ mode, news }: { mode: "polling" | "election"; news
                       const party = name.match(/\(([^)]+)\)$/)?.[1] ?? 'Not supplied'
                       return <article className="senate-candidate-profile" key={name}>
                         <CandidatePortrait candidate={{ name: identity, photo }} /><div>
-                        <strong>{name.replace(/ \([^)]+\)$/, '')}</strong><p>{party === 'D' ? 'Democratic' : party === 'R' ? 'Republican' : party === 'I' ? 'Independent' : party}</p>
-                        <p>{votes ? `${votes.v.toLocaleString()} reported votes · ${votes.pct ?? '—'}%` : 'Candidate vote percentage unavailable'}</p><p>{poll ? `PollingSource party average: ${party === 'D' ? poll.dem_average ?? '—' : party === 'R' ? poll.rep_average ?? '—' : '—'}% · candidate-specific measurement unavailable` : 'Candidate polling percentage unavailable'}</p>
+                        <strong>{name.replace(/ \([^)]+\)$/, '')}</strong><small>{party === 'D' ? 'Democratic' : party === 'R' ? 'Republican' : party === 'I' ? 'Independent' : party}</small>
+                        <small>{votes && result && result.total > 0 ? `${votes.v.toLocaleString()} reported votes · ${votes.pct ?? '—'}%` : 'Candidate vote percentage unavailable'}</small><small>{poll ? `PollingSource party average: ${party === 'D' ? poll.dem_average ?? '—' : party === 'R' ? poll.rep_average ?? '—' : '—'}% · candidate-specific measurement unavailable` : 'Candidate polling percentage unavailable'}</small>
+                        <a className="portrait-credit" href={entry.source} target="_blank" rel="noreferrer">Candidate / ballot source</a>
                         <small>{photo ? <a href={photo.source} target="_blank" rel="noreferrer">{photo.credit}</a> : 'Verified portrait unavailable'}</small>
                         </div></article>
                     })}

@@ -33,7 +33,7 @@ export const SENATE_DIRECTORY: Record<string, SenateDirectoryEntry> = {
         "writeIn": false,
         "source": "https://ballotpedia.org/United_States_Senate_election_in_Alabama,_2026",
         "photo": {
-          "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Barry%20Moore%20117th%20U.S%20Congress.jpg?width=240",
+          "url": "/candidates/2026/barry-moore.jpg",
           "source": "https://commons.wikimedia.org/wiki/File:Barry_Moore_117th_U.S_Congress.jpg",
           "credit": "House Creative Committee · Public domain"
         }
@@ -61,7 +61,7 @@ export const SENATE_DIRECTORY: Record<string, SenateDirectoryEntry> = {
         "writeIn": false,
         "source": "https://ballotpedia.org/United_States_Senate_election_in_Alaska,_2026",
         "photo": {
-          "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Senator%20Dan%20Sullivan%20official.jpg?width=240",
+          "url": "/candidates/2026/dan-s-sullivan.jpg",
           "source": "https://commons.wikimedia.org/wiki/File:Senator_Dan_Sullivan_official.jpg",
           "credit": "United States Senate · Public domain"
         }
@@ -73,7 +73,7 @@ export const SENATE_DIRECTORY: Record<string, SenateDirectoryEntry> = {
         "writeIn": false,
         "source": "https://ballotpedia.org/United_States_Senate_election_in_Alaska,_2026",
         "photo": {
-          "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Mary%20Peltola%20Congressional%20Member%20Portrait%20%282%29.jpeg?width=240",
+          "url": "/candidates/2026/mary-peltola.jpg",
           "source": "https://commons.wikimedia.org/wiki/File:Mary_Peltola_Congressional_Member_Portrait_%282%29.jpeg",
           "credit": "Leah Herman, House Creative Services · Public domain"
         }
@@ -125,7 +125,7 @@ export const SENATE_DIRECTORY: Record<string, SenateDirectoryEntry> = {
         "writeIn": false,
         "source": "https://ballotpedia.org/United_States_Senate_election_in_Arkansas,_2026",
         "photo": {
-          "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Tom%20Cotton%20official%20Senate%20photo.jpg?width=240",
+          "url": "/candidates/2026/tom-cotton.jpg",
           "source": "https://commons.wikimedia.org/wiki/File:Tom_Cotton_official_Senate_photo.jpg",
           "credit": "U.S. Senate Photo Office · Public domain"
         }
@@ -161,7 +161,7 @@ export const SENATE_DIRECTORY: Record<string, SenateDirectoryEntry> = {
         "writeIn": false,
         "source": "https://ballotpedia.org/United_States_Senate_election_in_Colorado,_2026",
         "photo": {
-          "url": "https://commons.wikimedia.org/wiki/Special:FilePath/John%20Hickenlooper%2C%20official%20portrait%2C%20117th%20Congress.jpeg?width=240",
+          "url": "/candidates/2026/john-hickenlooper.jpg",
           "source": "https://commons.wikimedia.org/wiki/File:John_Hickenlooper%2C_official_portrait%2C_117th_Congress.jpeg",
           "credit": "Renee Bouchard, U.S. Senate Photographic Studio · Public domain"
         }
@@ -245,7 +245,7 @@ export const SENATE_DIRECTORY: Record<string, SenateDirectoryEntry> = {
         "writeIn": false,
         "source": "https://ballotpedia.org/United_States_Senate_election_in_Delaware,_2026",
         "photo": {
-          "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Chris%20Coons%2C%20official%20portrait%2C%20112th%20Congress.jpg?width=240",
+          "url": "/candidates/2026/chris-coons.jpg",
           "source": "https://commons.wikimedia.org/wiki/File:Chris_Coons%2C_official_portrait%2C_112th_Congress.jpg",
           "credit": "United States Senate · Public domain"
         }
@@ -329,7 +329,7 @@ export const SENATE_DIRECTORY: Record<string, SenateDirectoryEntry> = {
         "writeIn": false,
         "source": "https://ballotpedia.org/United_States_Senate_election_in_Georgia,_2026",
         "photo": {
-          "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Jon%20Ossoff%20Senate%20Portrait%202021.jpg?width=240",
+          "url": "/candidates/2026/jon-ossoff.jpg",
           "source": "https://commons.wikimedia.org/wiki/File:Jon_Ossoff_Senate_Portrait_2021.jpg",
           "credit": "U.S. Senate Photographic Studio · Public domain"
         }
@@ -381,7 +381,7 @@ export const SENATE_DIRECTORY: Record<string, SenateDirectoryEntry> = {
         "writeIn": false,
         "source": "https://ballotpedia.org/United_States_Senate_election_in_Idaho,_2026",
         "photo": {
-          "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Jim%20Risch%20official%20portrait.jpg?width=240",
+          "url": "/candidates/2026/jim-risch.jpg",
           "source": "https://commons.wikimedia.org/wiki/File:Jim_Risch_official_portrait.jpg",
           "credit": "US Senate · Public domain"
         }
@@ -489,7 +489,7 @@ export const SENATE_DIRECTORY: Record<string, SenateDirectoryEntry> = {
         "writeIn": false,
         "source": "https://ballotpedia.org/United_States_Senate_election_in_Kansas,_2026",
         "photo": {
-          "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Roger%20Marshall%20official%20portrait.jpg?width=240",
+          "url": "/candidates/2026/roger-marshall.jpg",
           "source": "https://commons.wikimedia.org/wiki/File:Roger_Marshall_official_portrait.jpg",
           "credit": "Eric Connolly, U.S. House Office of Photography · Public domain"
         }
@@ -597,7 +597,7 @@ export const SENATE_DIRECTORY: Record<string, SenateDirectoryEntry> = {
         "writeIn": false,
         "source": "https://ballotpedia.org/United_States_Senate_election_in_Maine,_2026",
         "photo": {
-          "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Senator%20Susan%20Collins%202014%20official%20portrait.jpg?width=240",
+          "url": "/candidates/2026/susan-collins.jpg",
           "source": "https://commons.wikimedia.org/wiki/File:Senator_Susan_Collins_2014_official_portrait.jpg",
           "credit": "U.S. Congress · Public domain"
         }
@@ -817,7 +817,7 @@ export const SENATE_DIRECTORY: Record<string, SenateDirectoryEntry> = {
         "writeIn": false,
         "source": "https://ballotpedia.org/United_States_Senate_election_in_Mississippi,_2026",
         "photo": {
-          "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Cindy%20Hyde-Smith%20official%20photo.jpg?width=240",
+          "url": "/candidates/2026/cindy-hyde-smith.jpg",
           "source": "https://commons.wikimedia.org/wiki/File:Cindy_Hyde-Smith_official_photo.jpg",
           "credit": "U.S. Senate · Public domain"
         }
@@ -981,7 +981,7 @@ export const SENATE_DIRECTORY: Record<string, SenateDirectoryEntry> = {
         "writeIn": false,
         "source": "https://ballotpedia.org/United_States_Senate_election_in_New_Jersey,_2026",
         "photo": {
-          "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Cory%20Booker%2C%20official%20portrait%20%28119th%20Congress%29.jpg?width=240",
+          "url": "/candidates/2026/cory-booker.jpg",
           "source": "https://commons.wikimedia.org/wiki/File:Cory_Booker%2C_official_portrait_%28119th_Congress%29.jpg",
           "credit": "U.S. Senate · Public domain"
         }
@@ -1105,7 +1105,7 @@ export const SENATE_DIRECTORY: Record<string, SenateDirectoryEntry> = {
         "writeIn": false,
         "source": "https://ballotpedia.org/United_States_Senate_special_election_in_Ohio,_2026",
         "photo": {
-          "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Sherrod%20Brown%20official%20photo%202009.jpg?width=240",
+          "url": "/candidates/2026/sherrod-brown.jpg",
           "source": "https://commons.wikimedia.org/wiki/File:Sherrod_Brown_official_photo_2009.jpg",
           "credit": "Office of Senator Sherrod Brown · Public domain"
         }
@@ -1205,7 +1205,7 @@ export const SENATE_DIRECTORY: Record<string, SenateDirectoryEntry> = {
         "writeIn": false,
         "source": "https://ballotpedia.org/United_States_Senate_election_in_Oregon,_2026",
         "photo": {
-          "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Jeff%20Merkley.jpg?width=240",
+          "url": "/candidates/2026/jeff-merkley.jpg",
           "source": "https://commons.wikimedia.org/wiki/File:Jeff_Merkley.jpg",
           "credit": "United States Senate / Frank A. Fey · Public domain"
         }
@@ -1329,7 +1329,7 @@ export const SENATE_DIRECTORY: Record<string, SenateDirectoryEntry> = {
         "writeIn": false,
         "source": "https://ballotpedia.org/United_States_Senate_election_in_South_Dakota,_2026",
         "photo": {
-          "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Mike%20Rounds%20official%20Senate%20portrait.jpg?width=240",
+          "url": "/candidates/2026/mike-rounds.jpg",
           "source": "https://commons.wikimedia.org/wiki/File:Mike_Rounds_official_Senate_portrait.jpg",
           "credit": "United States Congress · Public domain"
         }
@@ -1509,7 +1509,7 @@ export const SENATE_DIRECTORY: Record<string, SenateDirectoryEntry> = {
         "writeIn": false,
         "source": "https://ballotpedia.org/United_States_Senate_election_in_Virginia,_2026",
         "photo": {
-          "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Mark%20Warner%2C%20official%20112th%20Congress%20Senate%20portrait.jpg?width=240",
+          "url": "/candidates/2026/mark-warner.jpg",
           "source": "https://commons.wikimedia.org/wiki/File:Mark_Warner%2C_official_112th_Congress_Senate_portrait.jpg",
           "credit": "Office of U.S. Senator Mark Warner · Public domain"
         }

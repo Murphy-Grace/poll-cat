@@ -1,4 +1,4 @@
-import { CandidatePortrait, MapPreview, MapViewTabs, ProviderNotice } from './ElectionMapUI'
+import { CandidatePortrait, ResultsCard, MapPreview, MapViewTabs, ProviderNotice } from './ElectionMapUI'
 import { LiveElectionStatus } from './LiveElectionStatus'
 import { RefreshStatus } from './RefreshStatus'
 import { SeatComposition } from "./SeatComposition"
@@ -801,7 +801,7 @@ function CandidateProfiles({ code, result, updatedAt, polling }: { code: string;
   </div>
 }
 
-function SenateTooltip({ code, anchor, summary }: { code: string; anchor: { x: number; y: number }; summary: string }) {
+function SenateTooltip({ code, summary }: { code: string; summary: string }) {
   const entry = SENATE_DIRECTORY[code]
   return <MapPreview id="senate-state-tooltip">
     <strong>{stateNameForCode(code)} · U.S. Senate</strong>
@@ -835,6 +835,7 @@ function SenateMap({
   onOpenRace: (race: Race) => void
 }) {
   const pollingReady = pollingProvider.data
+  const [tooltipAnchor, setTooltipAnchor] = useState({ x: 0, y: 0 })
   const [hoveredCode, setHoveredCode] = useState<string | null>(null)
   const [localSelected, setLocalSelected] = useState<string | null>(null)
   const selectedCode = selectedState === undefined ? localSelected : selectedState
@@ -844,7 +845,6 @@ function SenateMap({
   const now = useElectionClock()
 
   const resultMode = mapView === "results"
-  const [tooltipAnchor, setTooltipAnchor] = useState({ x: 0, y: 0 })
   const explorerRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     const dismiss = () => setHoveredCode(null)
@@ -950,23 +950,24 @@ function SenateMap({
                     clipPath={mapView === "closings" ? `url(#senate-closing-clip-${location.id})` : undefined}
                     d={location.path}
                     key={location.id}
-                    onClick={openState}
+                    onClick={(event) => { if (resultMode) { showTooltip(event.clientX || event.currentTarget.getBoundingClientRect().left, event.clientY || event.currentTarget.getBoundingClientRect().top) } else openState() }}
                     onPointerEnter={(event) => { if (event.pointerType !== "touch") showTooltip(event.clientX, event.clientY) }}
                     onPointerMove={(event) => { if (event.pointerType !== "touch") showTooltip(event.clientX, event.clientY) }}
-                    onPointerLeave={() => setHoveredCode(null)}
+                    onPointerLeave={() => { if (!resultMode) setHoveredCode(null) }}
                     onFocus={(event) => {
                       const rect = event.currentTarget.getBoundingClientRect()
                       showTooltip(rect.left + rect.width / 2, rect.top + rect.height / 2)
                     }}
-                    onBlur={() => setHoveredCode(null)}
+                    onBlur={(event) => { if (!(event.relatedTarget as Element | null)?.closest(".results-hover-card")) setHoveredCode(null) }}
                     onKeyDown={(event) => {
                       if (event.key === "Escape") setHoveredCode(null)
                       if (event.key === "Enter" || event.key === " ") {
                         event.preventDefault()
-                        openState()
+                        if (resultMode) { const rect = event.currentTarget.getBoundingClientRect(); showTooltip(rect.left + rect.width / 2, rect.top + rect.height / 2) } else openState()
                       }
                     }}
                     role="button"
+                    aria-pressed={selectedCode === code}
                     tabIndex={0}
                   >
                     <title>{description} · {marginLabel(mapMargin)}</title>
@@ -988,7 +989,8 @@ function SenateMap({
           </>}
         </aside>
       </div>
-      {hoveredCode && <SenateTooltip code={hoveredCode} anchor={tooltipAnchor} summary={(() => { const race = RACES.find(r => r.code === hoveredCode); const poll = race && pollingReady ? matchPollingRace(pollingReady, hoveredCode, race.seat === "SP") : undefined; const result = race ? resultsFeed?.races[`${hoveredCode}-${race.seat}`] : undefined; return `${mapView === "closings" ? "Scheduled closing times" : resultMode ? `Votes: ${marginLabel(voteMargin(result))} · ${reportedVoteSummary(result)} · Open America · ${formatProviderTime(resultsFeed?.as_of ?? null)}` : `Polling: ${marginLabel(margin(poll?.dem_average, poll?.rep_average))} · PollingSource · ${poll?.last_poll_date ?? "Publication date unavailable"}`} · ${closingStatus(stateNameForCode(hoveredCode), now)}${mapView === "closings" && closingSecondary(stateNameForCode(hoveredCode), now) ? " · Closing next" : ""}` })()} />}
+      {hoveredCode && resultMode && <ResultsCard id="senate-state-tooltip" state={stateNameForCode(hoveredCode)} office="Senate" anchor={tooltipAnchor} updatedAt={resultsFeed?.as_of} onClose={() => setHoveredCode(null)} races={RACES.filter(r => r.code === hoveredCode).map(r => ({ label: r.seat === 'SP' ? 'Special election' : 'Regular election', result: resultsFeed?.races[`${r.code}-${r.seat}`], candidates: SENATE_DIRECTORY[hoveredCode]?.candidates ?? [] }))} />}
+      {hoveredCode && !resultMode && <SenateTooltip code={hoveredCode} summary={(() => { const race = RACES.find(r => r.code === hoveredCode); const poll = race && pollingReady ? matchPollingRace(pollingReady, hoveredCode, race.seat === "SP") : undefined; const result = race ? resultsFeed?.races[`${hoveredCode}-${race.seat}`] : undefined; return `${mapView === "closings" ? "Scheduled closing times" : resultMode ? `Votes: ${marginLabel(voteMargin(result))} · ${reportedVoteSummary(result)} · Open America · ${formatProviderTime(resultsFeed?.as_of ?? null)}` : `Polling: ${marginLabel(margin(poll?.dem_average, poll?.rep_average))} · PollingSource · ${poll?.last_poll_date ?? "Publication date unavailable"}`} · ${closingStatus(stateNameForCode(hoveredCode), now)}${mapView === "closings" && closingSecondary(stateNameForCode(hoveredCode), now) ? " · Closing next" : ""}` })()} />}
       <div className="senate-state-explorer" aria-live="polite" ref={explorerRef} tabIndex={-1} role="region" aria-label={directoryName ? `${directoryName} Senate candidate profiles` : "Senate candidate profiles"}>
         <div className="senate-state-explorer-heading">
           <div>
@@ -3229,7 +3231,7 @@ return (
           type="button"
         >
           <img
-            src={theme === "dark" ? "/branding/POLLCATDARK.svg" : "/branding/POLLCATLIGHT.svg"}
+            src={theme === "dark" ? "/Branding/POLLCATDARK.svg" : "/Branding/POLLCATLIGHT.svg"}
             alt="Poll Cat — 2026 election explorer"
             width="549" height="593"
             className="brand-mark"

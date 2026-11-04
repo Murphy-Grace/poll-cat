@@ -1,3 +1,4 @@
+import { ProviderNotice } from './ElectionMapUI'
 import { useEffect, useRef, useState } from 'react'
 import usaMap from '@svg-maps/usa'
 import { stateClosingHours, closingTime, useElectionClock } from './PollClosings'
@@ -51,11 +52,11 @@ export function LiveElectionStatus({ office, feed, states, success, next, error 
       <span className="live-election-auto"><span aria-hidden="true" />Auto-refresh</span>
     </div>
     <div className="election-art-status" data-state={state}>
-      {state !== 'error' && state !== 'new' && <img src={state === 'closed' ? '/branding/all%20poles%20closed.svg' : '/branding/COMEBACKSOON.svg'} alt={state === 'closed' ? 'Poll Cat beside an all polls closed sign' : 'Poll Cat waiting for election updates'} width="549" height="593" />}
+      {state !== 'error' && state !== 'new' && <img src={state === 'closed' ? '/Branding/all%20poles%20closed.svg' : '/Branding/COMEBACKSOON.svg'} alt={state === 'closed' ? 'Poll Cat beside an all polls closed sign' : 'Poll Cat waiting for election updates'} width="549" height="593" />}
       <div><p role="status" aria-live="polite"><strong>{messages[state]}</strong></p>
         {state === 'closed' && <p>Results may still be arriving. Poll Cat will continue checking for updates.</p>}
         {state === 'closed' && <small>Scheduled times for this office; local extensions and voters in line may still apply.</small>}
-        {state === 'error' && <p>{error || 'The provider returned stale data.'}</p>}
+        {state === 'error' && <ProviderNotice label={`${office} results`} error={error || 'The provider returned stale data.'} />}
         {next > 0 && <small>Scheduled next check: <time dateTime={new Date(next).toISOString()}>{new Date(next).toLocaleString()}</time></small>}
         <RefreshStatus label={`${office} results`} success={success} next={next} interval={60000} failed={state === 'error'} />
       </div>
