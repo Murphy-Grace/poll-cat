@@ -1,3 +1,4 @@
+import { CandidatePortrait, MapPreview, MapViewTabs, ProviderNotice } from './ElectionMapUI'
 import { LiveElectionStatus } from './LiveElectionStatus'
 import { RefreshStatus } from './RefreshStatus'
 import { SeatComposition } from "./SeatComposition"
@@ -7,9 +8,8 @@ import { CivicResults } from "./CivicResults"
 import { GovernorMap, MarginLegend } from "./GovernorMap"
 import { ClosingDefs, ClosingLegend, closingSecondary, closingStyle, CLOSINGS, closingTime, closingStatus, stateClosingHours, closingColor, useElectionClock, PollClosings } from "./PollClosings"
 import { margin, marginColor, marginLabel, voteMargin, reportedVoteSummary } from "./election"
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { SENATE_DIRECTORY, SENATE_STATES, candidateResult, getRaceCandidates, migrateRaceId, type SenateCandidate } from "./senate"
-import { createPortal } from "react-dom"
 import { GuardianNews, useGuardianNews } from "./GuardianNews"
 import usaMap from "@svg-maps/usa"
 import { RESULTS_COVERAGE, fetchSenateResults, type SenateResultsFeed, type SenateResultRace } from "./results"
@@ -779,18 +779,6 @@ function ProviderState({
   )
 }
 
-function CandidatePortrait({ candidate }: { candidate: SenateCandidate }) {
-  const [failed, setFailed] = useState(false)
-  useEffect(() => setFailed(false), [candidate.photo?.url])
-  return candidate.photo && !failed ? (
-    <img className="candidate-portrait" src={candidate.photo.url} alt={`Portrait of ${candidate.name}`} loading="lazy" onError={() => setFailed(true)} />
-  ) : (
-    <span className="candidate-portrait candidate-neutral" role="img" aria-label={`Verified photograph unavailable for ${candidate.name}`}>
-      {candidate.name.split(" ").map((part) => part[0]).slice(0, 2).join("")}
-    </span>
-  )
-}
-
 function CandidateProfiles({ code, result, updatedAt, polling }: { code: string; result?: SenateResultRace; updatedAt?: string | null; polling?: PollingRace }) {
   const entry = SENATE_DIRECTORY[code]
   if (!entry) return null
@@ -814,25 +802,11 @@ function CandidateProfiles({ code, result, updatedAt, polling }: { code: string;
 }
 
 function SenateTooltip({ code, anchor, summary }: { code: string; anchor: { x: number; y: number }; summary: string }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [position, setPosition] = useState({ left: 8, top: 8 })
-  useLayoutEffect(() => {
-    const place = () => {
-      const rect = ref.current?.getBoundingClientRect()
-      const width = rect?.width ?? 300, height = rect?.height ?? 200
-      const left = Math.max(8, Math.min(anchor.x + 14, window.innerWidth - width - 8))
-      const top = Math.max(8, Math.min(anchor.y + 14, window.innerHeight - height - 8))
-      setPosition({ left, top })
-    }
-    place()
-    window.addEventListener("resize", place)
-    return () => window.removeEventListener("resize", place)
-  }, [anchor, code])
   const entry = SENATE_DIRECTORY[code]
-  return createPortal(<div ref={ref} id="senate-state-tooltip" role="tooltip" className="senate-tooltip" style={position}>
+  return <MapPreview id="senate-state-tooltip">
     <strong>{stateNameForCode(code)} · U.S. Senate</strong>
     {entry ? <><ul>{entry.candidates.filter(c => !c.writeIn).slice(0, 2).map((candidate) => <li key={candidate.name}><CandidatePortrait candidate={candidate} />{candidate.name} · {candidate.party}{candidate.writeIn ? " · Write-in" : ""}</li>)}</ul><p>{summary}</p><small>Directory checked {entry.checkedOn} · Click or press Enter for profiles</small></> : <p>{NO_SENATE_ELECTION}</p>}
-  </div>, document.body)
+  </MapPreview>
 }
 
 function SenateMap({
@@ -842,6 +816,7 @@ function SenateMap({
   onOpenRace,
   mode = "polling",
   resultsFeed = null,
+  resultsSuccess = null, resultsNext = 0, resultsError = null,
   forecastRows = [],
   selectedState, onSelectState, onViewChange,
 }: {
@@ -849,6 +824,9 @@ function SenateMap({
   selectedState?: string | null
   onSelectState?: (code: string | null) => void
   mode?: "polling" | "election"
+  resultsSuccess?: string | null
+  resultsNext?: number
+  resultsError?: string | null
   resultsFeed?: SenateResultsFeed | null
   forecastRows?: ForecastRace[]
   savedIds?: string[]
@@ -900,8 +878,7 @@ function SenateMap({
         ? ` and ${namedPollsters.length - 4} more`
         : ""
       }.`
-      : (pollingProvider.error ??
-        "Race averages and named survey rows appear only after validation."),
+      : "Race averages and named survey rows appear only after validation.",
   }
 
   return (
@@ -920,7 +897,8 @@ function SenateMap({
         </div>
       </div>
 
-      <div className="map-view-tabs" role="group" aria-label="Senate map display">{([ ["polling", "Polling"], ["results", "Live Results"], ["closings", "Poll Closings"] ] as const).map(([view, label]) => <button type="button" key={view} aria-pressed={mapView === view} onClick={() => { setMapView(view); onViewChange?.(view) }}>{label}</button>)}</div>
+      <MapViewTabs office="Senate" view={mapView} onChange={view => { setMapView(view); onViewChange?.(view) }} />
+      <ProviderNotice label="Senate polling" error={pollingProvider.error} />
       <PollClosings compact />
       <div className="map-layout">
         <div className="geographic-map-wrap">
@@ -998,7 +976,7 @@ function SenateMap({
           </svg>
         </div>
 
-      {mapView === "results" && <LiveElectionStatus office="Senate" feed={resultsFeed} states={SENATE_STATES} />}
+      {mapView === "results" && <LiveElectionStatus office="Senate" feed={resultsFeed} states={SENATE_STATES} success={resultsSuccess} next={resultsNext} error={resultsError} />}
         <aside className="map-legend" aria-live="polite">{mapView === "closings" ? <ClosingLegend now={now}/> : <MarginLegend/>}
           {mapView !== "closings" && <>
           <p className="eyebrow">{resultMode ? "Election results" : pollingCopy.title}</p>
@@ -2075,7 +2053,7 @@ export default function App() {
       </div>
       <div className="national-explorer-layout">
         <div>
-          <SenateMap onViewChange={setDirectoryView} selectedState={selectedMapState} onSelectState={setSelectedMapState} onOpenRace={(race) => openRaceMetric(race, mode === "election" ? "results" : "polling")} pollingProvider={pollingProvider} pollingDetails={pollingDetails} savedIds={watchlist.savedIds} mode={mode} resultsFeed={resultsLoad.data} forecastRows={forecastProvider.data?.rows} />
+          <SenateMap onViewChange={setDirectoryView} selectedState={selectedMapState} onSelectState={setSelectedMapState} onOpenRace={(race) => openRaceMetric(race, mode === "election" ? "results" : "polling")} pollingProvider={pollingProvider} pollingDetails={pollingDetails} savedIds={watchlist.savedIds} mode={mode} resultsFeed={resultsLoad.data} resultsSuccess={resultsLoad.lastSuccess} resultsNext={resultsNext} resultsError={resultsLoad.error} forecastRows={forecastProvider.data?.rows} />
           </div>
         <aside className="national-state-sidebar" aria-label="All 50 states and polling attention">
           <GuardianNews news={guardianNews} compact />
@@ -3251,8 +3229,9 @@ return (
           type="button"
         >
           <img
-            src="/POLLCAT.png"
-            alt="Poll Cat logo"
+            src={theme === "dark" ? "/branding/POLLCATDARK.svg" : "/branding/POLLCATLIGHT.svg"}
+            alt="Poll Cat — 2026 election explorer"
+            width="549" height="593"
             className="brand-mark"
           />
           <span>

@@ -3648,3 +3648,27 @@ button.national-state-row[aria-pressed="true"] { background:#443b6544; outline:2
 .closing-explanation summary:focus-visible { outline:2px solid currentColor; outline-offset:4px; border-radius:2px; }
 .closing-explanation > div { max-width:72ch; padding:6px 0; }
 .closing-explanation p + p { margin-top:10px; }
+
+/* Official artwork retains its intrinsic aspect ratio and transparent canvas. */
+.brand .brand-mark { width: 76px; height: auto; object-fit: contain; background: transparent; border-radius: 0; box-shadow: none; }
+.election-art-status { display: flex; align-items: center; gap: 16px; margin: 14px 0; }
+.election-art-status > img { width: 110px; height: auto; flex-shrink: 0; object-fit: contain; }
+.election-art-status > div { min-width: 0; overflow-wrap: anywhere; }
+.election-art-status p { margin: 6px 0; }
+.election-art-status .refresh-status { line-height: 1.6; }
+@media (max-width: 600px) {
+  .brand .brand-mark { width: 60px; }
+  .election-art-status { gap: 10px; align-items: flex-start; }
+  .election-art-status > img { width: 78px; }
+}
+
+/* Shared Senate/Governor map and portrait tokens. Inline previews stay inside the card. */
+.map-preview { margin: 12px 18px; padding: 13px 15px; max-width: calc(100% - 36px); min-width: 0; overflow-wrap: anywhere; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); color: var(--ink); font-size: 12px; line-height: 1.5; }
+.map-preview strong, .map-preview small { display: block; }
+.map-preview ul { list-style: none; padding: 0; margin: 6px 0; }
+.map-preview li, .tooltip-candidate { display: flex; align-items: center; gap: 8px; margin-block: 5px; }
+.map-preview .candidate-portrait { width: 32px; height: 40px; flex: 0 0 32px; }
+.provider-notice { margin: 12px 18px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px; font-size: 12px; overflow-wrap: anywhere; }
+.provider-notice summary { cursor: pointer; }
+.national-explorer-layout .geographic-map-wrap { min-height: 0; }
+.geographic-map { aspect-ratio: 959 / 593; max-height: none; }
