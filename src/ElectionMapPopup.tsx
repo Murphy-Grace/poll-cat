@@ -45,7 +45,7 @@ export function ElectionMapPopup({ id, state, office, view, popup, races, now, u
     place()
     const observer = new ResizeObserver(place)
     if (ref.current) observer.observe(ref.current)
-    const scroll = (event: Event) => { if (!(event.target instanceof Node) || !ref.current?.contains(event.target)) popup.close() }
+    const scroll = (event: Event) => { if (!(event.target instanceof Node) || !ref.current?.contains(event.target)) place() }
     window.addEventListener('resize', place); window.addEventListener('scroll', scroll, true)
     return () => { observer.disconnect(); window.removeEventListener('resize', place); window.removeEventListener('scroll', scroll, true) }
   }, [popup.anchor.x, popup.anchor.y])
