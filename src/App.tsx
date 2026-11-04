@@ -5,7 +5,7 @@ import { StateSilhouette } from "./StateSilhouette"
 import { ForecastCoverage } from "./ForecastCoverage"
 import { CivicResults } from "./CivicResults"
 import { GovernorMap, MarginLegend } from "./GovernorMap"
-import { ClosingDefs, ClosingLegend, closingStyle, CLOSINGS, closingTime, closingStatus, stateClosingHours, closingColor, useElectionClock, PollClosings } from "./PollClosings"
+import { ClosingDefs, ClosingLegend, closingSecondary, closingStyle, CLOSINGS, closingTime, closingStatus, stateClosingHours, closingColor, useElectionClock, PollClosings } from "./PollClosings"
 import { margin, marginColor, marginLabel, voteMargin, reportedVoteSummary } from "./election"
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { SENATE_DIRECTORY, SENATE_STATES, candidateResult, getRaceCandidates, migrateRaceId, type SenateCandidate } from "./senate"
@@ -1010,7 +1010,7 @@ function SenateMap({
           </>}
         </aside>
       </div>
-      {hoveredCode && <SenateTooltip code={hoveredCode} anchor={tooltipAnchor} summary={(() => { const race = RACES.find(r => r.code === hoveredCode); const poll = race && pollingReady ? matchPollingRace(pollingReady, hoveredCode, race.seat === "SP") : undefined; const result = race ? resultsFeed?.races[`${hoveredCode}-${race.seat}`] : undefined; return `${mapView === "closings" ? "Scheduled closing times" : resultMode ? `Votes: ${marginLabel(voteMargin(result))} · ${reportedVoteSummary(result)} · Open America · ${formatProviderTime(resultsFeed?.as_of ?? null)}` : `Polling: ${marginLabel(margin(poll?.dem_average, poll?.rep_average))} · PollingSource · ${poll?.last_poll_date ?? "Publication date unavailable"}`} · ${closingStatus(stateNameForCode(hoveredCode), now)}` })()} />}
+      {hoveredCode && <SenateTooltip code={hoveredCode} anchor={tooltipAnchor} summary={(() => { const race = RACES.find(r => r.code === hoveredCode); const poll = race && pollingReady ? matchPollingRace(pollingReady, hoveredCode, race.seat === "SP") : undefined; const result = race ? resultsFeed?.races[`${hoveredCode}-${race.seat}`] : undefined; return `${mapView === "closings" ? "Scheduled closing times" : resultMode ? `Votes: ${marginLabel(voteMargin(result))} · ${reportedVoteSummary(result)} · Open America · ${formatProviderTime(resultsFeed?.as_of ?? null)}` : `Polling: ${marginLabel(margin(poll?.dem_average, poll?.rep_average))} · PollingSource · ${poll?.last_poll_date ?? "Publication date unavailable"}`} · ${closingStatus(stateNameForCode(hoveredCode), now)}${mapView === "closings" && closingSecondary(stateNameForCode(hoveredCode), now) ? " · Closing next" : ""}` })()} />}
       <div className="senate-state-explorer" aria-live="polite" ref={explorerRef} tabIndex={-1} role="region" aria-label={directoryName ? `${directoryName} Senate candidate profiles` : "Senate candidate profiles"}>
         <div className="senate-state-explorer-heading">
           <div>

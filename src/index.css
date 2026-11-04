@@ -3565,17 +3565,14 @@ button.national-state-row[aria-pressed="true"] { background:#443b6544; outline:2
 .map-view-tabs { display:flex; flex-wrap:wrap; gap:6px; }
 .map-view-tabs button { min-height:44px; }
 .map-card > h2, .map-card > .map-intro, .map-card > .refresh-status, .map-card > p[role=status] { margin:12px 18px; }
-.map-state.closing-state, .map-state.closing-state:hover, .map-state.closing-state.selected, .map-state.closing-state:focus-visible { stroke:#18212e; stroke-width:1.4; }
+.map-state.closing-state, .map-state.closing-state:hover, .map-state.closing-state.selected, .map-state.closing-state:focus-visible { stroke:#000; stroke-width:1; }
 .map-state:focus-visible { filter:brightness(1.15); }
 .closing-wave-legend { line-height:1.6; }
 .closing-wave-legend > strong, .closing-wave-legend > p, .closing-stage-legend { flex-basis:100%; }
 .closing-wave-legend p { margin:0; color:var(--ink-muted); }
 .closing-stage-legend { display:flex; flex-wrap:wrap; gap:10px 16px; }
-.closing-wave-legend i { border:1px solid #18212e; vertical-align:middle; }
+.closing-wave-legend i { border:1px solid #000; vertical-align:middle; }
 .closing-stage-legend i { width:24px; height:16px; }
-.wave-upcoming { background:#f5f1ff; }
-.wave-next { background:repeating-linear-gradient(to bottom, #a78bfa 0 3px, #e5dcfe 3px 12px); }
-.wave-closed { background:#a78bfa; }
 .national-state-row { text-align:left; width:100%; }
 .national-state-row small { font-size:11px; line-height:1.5; }
 .national-state-sidebar { display:flex; flex-direction:column; }
@@ -3645,3 +3642,9 @@ button.national-state-row[aria-pressed="true"] { background:#443b6544; outline:2
   .header-inner nav { height:auto; align-items:stretch; }
   .header-inner nav .nav-link { height:auto; }
 }
+
+.closing-explanation { flex-basis:100%; min-width:0; border-top:1px solid var(--border, #d1d5db); padding-top:8px; color:var(--ink-muted); font-size:12px; }
+.closing-explanation summary { cursor:pointer; width:fit-content; padding:4px 0; }
+.closing-explanation summary:focus-visible { outline:2px solid currentColor; outline-offset:4px; border-radius:2px; }
+.closing-explanation > div { max-width:72ch; padding:6px 0; }
+.closing-explanation p + p { margin-top:10px; }

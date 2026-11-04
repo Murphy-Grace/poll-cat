@@ -3,7 +3,7 @@ import { GOVERNOR_PORTRAITS } from './governor-portraits'
 import { RefreshStatus } from './RefreshStatus'
 import { StateSilhouette } from './StateSilhouette'
 import { GuardianNews, useGuardianNews } from './GuardianNews'
-import { ClosingDefs, ClosingLegend, PollClosings, closingStyle, CLOSINGS, closingColor, closingStatus, closingTime, stateClosingHours, useElectionClock } from './PollClosings'
+import { ClosingDefs, ClosingLegend, closingSecondary, PollClosings, closingStyle, CLOSINGS, closingColor, closingStatus, closingTime, stateClosingHours, useElectionClock } from './PollClosings'
 import type { SenateCandidate } from './senate'
 function governorPhoto(identity: string): SenateCandidate['photo'] { return GOVERNOR_PORTRAITS[identity] ?? null }
 import { useEffect, useState } from "react"
@@ -180,6 +180,7 @@ export function GovernorMap({ mode, news }: { mode: "polling" | "election"; news
           {view === "results" && <p>{reportedVoteSummary(results?.races[`${hovered}-REG`])}</p>}
           <small>{view === 'closings' ? '270toWin · 2026 schedule · checked Nov. 3' : view === 'results' ? `Open America · ${results?.as_of ?? 'Source time unavailable'}` : `PollingSource · ${polls.find(p => p.state === hovered)?.last_poll_date ?? 'Source time unavailable'}`}</small>
           <p>{closingStatus(locations.find(l => l.id.toUpperCase() === hovered)?.name ?? '', now)}</p>
+          {view === 'closings' && closingSecondary(locations.find(l => l.id.toUpperCase() === hovered)?.name ?? '', now) && <small>Closing next</small>}
         </div>}
         <p>
           Territories:{" "}

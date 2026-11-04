@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react"
 // Scheduled regional closings in EST, November 3, 2026. Split-zone states
 // appear at each regional closing. Court extensions are not a live feed.
+// Verified Nov 3: https://www.270towin.com/poll-closing-times/
+// NH local waves: https://apnews.com/article/b7e739aba1fe5f0525e55b973000cc1a
+// Midnight NH voting is completion-based, not a fixed scheduled closing.
 export const CLOSINGS: [number, string][] = [
   [18, "Indiana (Eastern), Kentucky (Eastern)"],
   [
     19,
-    "Florida (Eastern), Georgia, Indiana (Central), Kentucky (Central), South Carolina, Vermont, Virginia",
+    "Florida (Eastern), Georgia, Indiana (Central), Kentucky (Central), South Carolina, Vermont, Virginia, New Hampshire (7 PM local)",
   ],
-  [19.5, "North Carolina, Ohio, West Virginia"],
+  [19.5, "North Carolina, Ohio, West Virginia, New Hampshire (7:30 PM local)"],
   [
     20,
     "Alabama, Connecticut, Delaware, Florida (Central), Illinois, Kansas (Central), Maine, Maryland, Massachusetts, Michigan (Eastern), Mississippi, Missouri, New Hampshire (latest local closing), New Jersey, North Dakota (Central), Oklahoma, Pennsylvania, Rhode Island, South Dakota (Central), Tennessee, Texas (Central), DC",
@@ -23,7 +26,8 @@ export const CLOSINGS: [number, string][] = [
   [25, "Alaska (Hawaii–Aleutian)"],
 ]
 export function closingTime(hour: number) {
-  return Date.UTC(2026, 10, 3, 5) + hour * 3600000
+  // Election day is Eastern Standard Time (UTC−05:00), independent of the viewer’s zone.
+  return Date.parse("2026-11-03T00:00:00-05:00") + hour * 3600000
 }
 export function PollClosings({ compact = false }: { compact?: boolean }) {
   const [now, setNow] = useState(Date.now())
@@ -90,18 +94,22 @@ export function stateClosingHours(state: string) {
 }
 export function closingStatus(state: string, now: number) {
   const hours = stateClosingHours(state)
-  const upcoming = hours.filter(h => closingTime(h) > now)
-  if (!hours.length) return "Scheduled closing unavailable"
-  if (!upcoming.length) return "All regions scheduled closed; voters in line and extensions may apply"
-  const seconds = Math.ceil((closingTime(upcoming[0]) - now) / 1000)
-  return `${new Date(closingTime(upcoming[0])).toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" })} ET · ${upcoming.length < hours.length ? "Some regions scheduled closed · " : ""}Next regional closing in ${Math.floor(seconds / 3600)}h ${Math.floor(seconds % 3600 / 60)}m ${seconds % 60}s`
+  if (!hours.length) return "Closing time unavailable"
+  const stage = closingStage(state, now)
+  if (stage.closed) return "Polls closed"
+  if (stage.partial) return "Partially closed"
+  return stage.next ? "Closing next" : "Polls open"
 }
-const WAVE_COLORS = ["#fde68a", "#fbbf24", "#fb923c", "#c084fc", "#a78bfa", "#818cf8", "#22d3ee", "#2dd4bf", "#a3e635", "#e879f9"]
+export const WAVE_COLORS: Record<number, string> = {
+  18: "#b28b22", 19: "#dc6b23", 19.5: "#b34d86", 20: "#8058b3",
+  20.5: "#a27860", 21: "#527d91", 22: "#168b90", 23: "#458747",
+  24: "#8a9725", 25: "#c75db0",
+}
 export function closingColor(state: string, now: number, explicitHour?: number) {
   const hours = stateClosingHours(state)
   const hour = explicitHour ?? hours.find(h => closingTime(h) > now) ?? hours.at(-1)
   if (hour == null) return "#64748b"
-  const color = WAVE_COLORS[CLOSINGS.findIndex(([h]) => h === hour)]
+  const color = WAVE_COLORS[hour]
   return color
 }
 
@@ -120,17 +128,31 @@ export function closingStyle(state: string, now: number, view: string, prefix = 
   return { fill: stage.closed ? color : `url(#${prefix}-${state.replace(/ /g, "-")})` }
 }
 
+// Density counts elapsed scheduled waves, never geographic or voter coverage.
+export function closingPattern(state: string, now: number) {
+  const stage = closingStage(state, now)
+  const elapsed = stateClosingHours(state).filter(h => closingTime(h) <= now).length
+  return {
+    kind: stage.closed ? "solid" : stage.partial ? "dots" : stage.next ? "stripes" : "pale",
+    spacing: Math.max(5, 14 - elapsed * 3),
+  }
+}
+export function closingSecondary(state: string, now: number) {
+  const stage = closingStage(state, now)
+  return stage.partial && stage.next ? "Closing next" : ""
+}
 // SVG pattern fills and explicit state clips keep all marks inside boundaries.
 export function ClosingDefs({ locations, now, prefix }: { locations: { id: string; name: string; path: string }[]; now: number; prefix: string }) {
   return <defs>{locations.map(l => {
     const color = closingColor(l.name, now)
-    const stage = closingStage(l.name, now)
+    const { kind, spacing } = closingPattern(l.name, now)
+    const size = kind === "dots" ? spacing : 12
     return <g key={l.id}>
       <clipPath id={`${prefix}-clip-${l.id}`}><path d={l.path} /></clipPath>
-      <pattern id={`${prefix}-${l.name.replace(/ /g, "-")}`} width="12" height="12" patternUnits="userSpaceOnUse">
-        <rect width="12" height="12" fill={paleWave(color, stage.next ? 0.3 : 0.12)} />
-        {stage.next && <rect width="12" height="3" fill={color} />}
-        {stage.partial && <circle cx="6" cy="8" r="1.8" fill="#18212e" />}
+      <pattern id={`${prefix}-${l.name.replace(/ /g, "-")}`} width={size} height={size} patternUnits="userSpaceOnUse">
+        <rect width={size} height={size} fill={paleWave(color, 0.12)} />
+        {kind === "stripes" && <rect width={size} height="4" fill={color} />}
+        {kind === "dots" && <circle cx={size / 2} cy={size / 2} r="1.3" fill={color} />}
       </pattern>
     </g>
   })}</defs>
@@ -140,10 +162,20 @@ export function paleWave(color: string, strength: number) {
   return `rgb(${channels.join(", ")})`
 }
 export function ClosingLegend({ now }: { now: number }) {
+  const color = closingColor("", now, 20.5)
+  const pale = paleWave(color, 0.12)
   return <div className="closing-wave-legend">
-    <strong>Scheduled closings · Eastern Time</strong>
+    <strong>Color = scheduled closing time · Eastern Time</strong>
     {CLOSINGS.map(([h]) => <span key={h}><i style={{ background: closingColor("", now, h) }} />{new Date(closingTime(h)).toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" })} ET</span>)}
-    <div className="closing-stage-legend"><span><i className="wave-upcoming" />Upcoming</span><span><i className="wave-next" />Closing Next · horizontal stripes</span><span><i className="wave-closed" />Closed · solid</span></div>
-    <p>Dots: partially closed; some regions remain open. Split-zone states use their next regional wave, then their final wave after all regions close. Closed means scheduled time passed; extensions and voters in line may apply.</p>
+    <div className="closing-stage-legend"><strong>Pattern = closing status</strong><span><i style={{ background: pale }} />Upcoming · pale</span><span><i style={{ background: `repeating-linear-gradient(to bottom, ${color} 0 4px, ${pale} 4px 12px)` }} />Closing next · horizontal stripes</span><span><i style={{ background: color }} />Polls closed · solid</span><span><i style={{ backgroundColor: pale, backgroundImage: `radial-gradient(circle at 6px 8px, ${color} 0 1.3px, transparent 1.3px)`, backgroundSize: "12px 12px" }} />Partially closed · dots</span></div>
+    <p>Color shows the next scheduled regional wave, or the final wave once closed. More dots mean more scheduled regional waves have passed, not a share of precincts or voters. Dot positions do not identify closed areas.</p>
+    <details className="closing-explanation">
+      <summary>Why are some zones gray?</summary>
+      <div>
+        <p>Pale zones have upcoming scheduled closings. Gray zones have no verified closing time.</p>
+        <p>This map shows scheduled poll-closing status, not confirmation that every polling location has physically stopped accepting voters. People already in line may still be able to vote, and some locations may have extended hours.</p>
+        <p>A closed poll does not necessarily mean election results are available.</p>
+      </div>
+    </details>
   </div>
 }
